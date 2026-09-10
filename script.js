@@ -1,102 +1,267 @@
-const API = "/api/data";
+const API_URL = "/api/app.py";
 
-const heroDownload =
-    document.getElementById("heroDownload");
-
-const downloadButton =
-    document.getElementById("downloadButton");
-
-const buy24 =
-    document.getElementById("buy24");
-
-const buy7 =
-    document.getElementById("buy7");
-
-const buy30 =
-    document.getElementById("buy30");
-
-const buyPermanent =
-    document.getElementById("buyPermanent");
-
-const qrImage =
-    document.getElementById("qrImage");
-
-const qrWhatsapp =
-    document.getElementById("qrWhatsapp");
-
-const topButton =
-    document.getElementById("topButton");
+let datosPython = null;
 
 
-async function cargarDatos()
+// ==========================================================
+// CONECTAR CON PYTHON
+// ==========================================================
+
+async function conectarPython()
 {
     try
     {
-        const respuesta =
-            await fetch(API);
+        const respuesta = await fetch(
+            API_URL,
+            {
+                method: "GET",
+                cache: "no-store"
+            }
+        );
 
         if(!respuesta.ok)
         {
             throw new Error(
-                "No se pudo conectar con Python"
+                "Python no respondió"
             );
         }
 
         const datos =
             await respuesta.json();
 
-
-        /*
-            DESCARGA
-        */
-
-        heroDownload.href =
-            datos.descarga;
-
-        downloadButton.href =
-            datos.descarga;
+        datosPython = datos;
 
 
-        /*
-            LICENCIAS
-        */
+        // ------------------------------------------
+        // ESTADO
+        // ------------------------------------------
 
-        buy24.href =
-            datos.licencias["24h"];
-
-        buy7.href =
-            datos.licencias["7dias"];
-
-        buy30.href =
-            datos.licencias["30dias"];
-
-        buyPermanent.href =
-            datos.licencias["permanente"];
+        document.getElementById(
+            "pythonStatus"
+        ).textContent =
+            "PYTHON CONECTADO";
 
 
-        /*
-            QR
-        */
+        document.getElementById(
+            "terminalStatus"
+        ).textContent =
+            "ONLINE";
 
-        qrImage.src =
-            datos.qr;
 
-        qrWhatsapp.href =
-            datos.whatsapp;
+        document.getElementById(
+            "terminalOnline"
+        ).textContent =
+            "ONLINE";
 
+
+        // ------------------------------------------
+        // VERSIÓN
+        // ------------------------------------------
+
+        document.getElementById(
+            "version"
+        ).textContent =
+            datos.version;
+
+
+        // ------------------------------------------
+        // QR
+        // ------------------------------------------
+
+        if(datos.qr)
+        {
+            document.getElementById(
+                "qrImage"
+            ).src =
+                datos.qr;
+        }
 
     }
     catch(error)
     {
-        console.error(
-            error
-        );
+        console.error(error);
 
-        document.body.classList.add(
-            "api-error"
-        );
+        document.getElementById(
+            "pythonStatus"
+        ).textContent =
+            "PYTHON SIN CONEXIÓN";
+
+        document.getElementById(
+            "terminalStatus"
+        ).textContent =
+            "OFFLINE";
+
+        document.getElementById(
+            "terminalOnline"
+        ).textContent =
+            "OFFLINE";
     }
 }
+
+
+
+// ==========================================================
+// DESCARGAR
+// ==========================================================
+
+function descargar()
+{
+    if(
+        !datosPython ||
+        !datosPython.links ||
+        !datosPython.links.download
+    )
+    {
+        alert(
+            "No se pudo obtener el enlace de descarga."
+        );
+
+        return;
+    }
+
+
+    /*
+        IMPORTANTE:
+
+        No usamos href="#".
+
+        No hacemos scroll.
+
+        Vamos directamente al enlace que
+        entregó Python.
+    */
+
+    window.location.href =
+        datosPython.links.download;
+}
+
+
+document.getElementById(
+    "downloadBtn"
+).addEventListener(
+    "click",
+    descargar
+);
+
+
+document.getElementById(
+    "downloadBottom"
+).addEventListener(
+    "click",
+    descargar
+);
+
+
+
+// ==========================================================
+// WHATSAPP
+// ==========================================================
+
+function comprar(tipo)
+{
+    if(
+        !datosPython ||
+        !datosPython.links ||
+        !datosPython.links.licencias
+    )
+    {
+        alert(
+            "Python todavía no está conectado."
+        );
+
+        return;
+    }
+
+
+    const enlace =
+        datosPython.links.licencias[tipo];
+
+
+    if(enlace)
+    {
+        window.location.href =
+            enlace;
+    }
+}
+
+
+document.getElementById(
+    "buy24"
+).addEventListener(
+    "click",
+    function()
+    {
+        comprar("24h");
+    }
+);
+
+
+document.getElementById(
+    "buy7"
+).addEventListener(
+    "click",
+    function()
+    {
+        comprar("7dias");
+    }
+);
+
+
+document.getElementById(
+    "buy30"
+).addEventListener(
+    "click",
+    function()
+    {
+        comprar("30dias");
+    }
+);
+
+
+document.getElementById(
+    "buyPermanent"
+).addEventListener(
+    "click",
+    function()
+    {
+        comprar("permanente");
+    }
+);
+
+
+
+// ==========================================================
+// QR → WHATSAPP
+// ==========================================================
+
+document.getElementById(
+    "qrButton"
+).addEventListener(
+    "click",
+    function()
+    {
+        if(
+            datosPython &&
+            datosPython.links &&
+            datosPython.links.whatsapp
+        )
+        {
+            window.location.href =
+                datosPython.links.whatsapp;
+        }
+    }
+);
+
+
+
+// ==========================================================
+// BOTÓN ARRIBA
+// ==========================================================
+
+const topButton =
+    document.getElementById(
+        "topButton"
+    );
 
 
 window.addEventListener(
@@ -133,54 +298,9 @@ topButton.addEventListener(
 );
 
 
-/*
-    Animación de las tarjetas
-*/
 
-const tarjetas =
-    document.querySelectorAll(
-        ".card"
-    );
+// ==========================================================
+// INICIAR
+// ==========================================================
 
-
-const observador =
-    new IntersectionObserver(
-        function(elementos)
-        {
-            elementos.forEach(
-                function(elemento)
-                {
-                    if(
-                        elemento.isIntersecting
-                    )
-                    {
-                        elemento.target.style.opacity =
-                            "1";
-
-                        elemento.target.style.transform =
-                            "translateY(0)";
-                    }
-                }
-            );
-        },
-        {
-            threshold: 0.15
-        }
-    );
-
-
-tarjetas.forEach(
-    function(tarjeta)
-    {
-        observador.observe(
-            tarjeta
-        );
-    }
-);
-
-
-/*
-    Cargar todo desde Python
-*/
-
-cargarDatos();
+conectarPython();
