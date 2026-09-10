@@ -44,9 +44,7 @@ def whatsapp(plan, precio):
         + precio
     )
 
-    texto = urllib.parse.quote(
-        mensaje
-    )
+    texto = urllib.parse.quote(mensaje)
 
     return (
         "https://wa.me/"
@@ -57,7 +55,7 @@ def whatsapp(plan, precio):
 
 
 # ==========================================================
-# OBTENER IP
+# IP
 # ==========================================================
 
 def get_client_ip(handler):
@@ -182,31 +180,35 @@ class handler(BaseHTTPRequestHandler):
         )
 
 
+    # ======================================================
+    # OPTIONS
+    # ======================================================
+
     def do_OPTIONS(self):
 
         self.send_response(204)
-
 
         self.send_header(
             "Access-Control-Allow-Origin",
             "*"
         )
 
-
         self.send_header(
             "Access-Control-Allow-Methods",
             "GET, OPTIONS"
         )
-
 
         self.send_header(
             "Access-Control-Allow-Headers",
             "Content-Type"
         )
 
-
         self.end_headers()
 
+
+    # ======================================================
+    # JSON
+    # ======================================================
 
     def send_json(
         self,
