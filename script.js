@@ -1,4 +1,4 @@
-const API = "/api";
+const API = "/api/app.py";
 
 let datos = null;
 
