@@ -1,9 +1,6 @@
-from http.server import BaseHTTPRequestHandler
-import json
 import urllib.parse
 import io
 import base64
-
 import qrcode
 
 
@@ -16,7 +13,6 @@ PROJECT = "GrifoPYME"
 VERSION = "1.0"
 
 WHATSAPP = "5356639178"
-
 
 DOWNLOAD_URL = (
     "https://github.com/"
@@ -35,8 +31,8 @@ DOWNLOAD_URL = (
 def whatsapp(plan, precio):
 
     mensaje = (
-        "Hola, me interesa comprar "
-        "una licencia de GrifoPYME.\n\n"
+        "Hola, me interesa comprar una licencia "
+        "de GrifoPYME.\n\n"
         "Licencia: "
         + plan
         + "\n"
@@ -44,9 +40,7 @@ def whatsapp(plan, precio):
         + precio
     )
 
-    texto = urllib.parse.quote(
-        mensaje
-    )
+    texto = urllib.parse.quote(mensaje)
 
     return (
         "https://wa.me/"
@@ -74,10 +68,7 @@ def generar_qr():
     )
 
     qr.add_data(enlace)
-
-    qr.make(
-        fit=True
-    )
+    qr.make(fit=True)
 
     imagen = qr.make_image()
 
@@ -92,9 +83,7 @@ def generar_qr():
 
     datos = base64.b64encode(
         memoria.read()
-    ).decode(
-        "utf-8"
-    )
+    ).decode("utf-8")
 
     return (
         "data:image/png;base64,"
@@ -103,15 +92,13 @@ def generar_qr():
 
 
 # ==========================================================
-# DATOS
+# API
 # ==========================================================
 
-def obtener_datos():
+def handler(request):
 
-    return {
-
+    datos = {
         "project": PROJECT,
-
         "version": VERSION,
 
         "descarga": DOWNLOAD_URL,
@@ -146,73 +133,15 @@ def obtener_datos():
             )
 
         }
-
     }
 
+    return {
+        "statusCode": 200,
 
-# ==========================================================
-# VERCEL
-# ==========================================================
+        "headers": {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-store"
+        },
 
-class handler(BaseHTTPRequestHandler):
-
-    def do_GET(self):
-
-        try:
-
-            datos = obtener_datos()
-
-            respuesta = json.dumps(
-                datos,
-                ensure_ascii=False
-            ).encode(
-                "utf-8"
-            )
-
-
-            self.send_response(200)
-
-            self.send_header(
-                "Content-Type",
-                "application/json; charset=utf-8"
-            )
-
-            self.send_header(
-                "Cache-Control",
-                "no-store, no-cache, must-revalidate"
-            )
-
-            self.send_header(
-                "Access-Control-Allow-Origin",
-                "*"
-            )
-
-            self.end_headers()
-
-            self.wfile.write(
-                respuesta
-            )
-
-
-        except Exception as error:
-
-            respuesta = json.dumps(
-                {
-                    "error": str(error)
-                }
-            ).encode(
-                "utf-8"
-            )
-
-            self.send_response(500)
-
-            self.send_header(
-                "Content-Type",
-                "application/json; charset=utf-8"
-            )
-
-            self.end_headers()
-
-            self.wfile.write(
-                respuesta
-            )
+        "body": datos
+    }
