@@ -1,18 +1,18 @@
-const API_URL = "/api/app.py";
+const API = "/api";
 
-let datosPython = null;
+let datos = null;
 
 
 // ==========================================================
-// CONECTAR CON PYTHON
+// CARGAR PYTHON
 // ==========================================================
 
-async function conectarPython() {
+async function cargarDatos() {
 
     try {
 
         const respuesta = await fetch(
-            API_URL + "?t=" + Date.now(),
+            API + "?t=" + Date.now(),
             {
                 method: "GET",
                 cache: "no-store"
@@ -22,373 +22,342 @@ async function conectarPython() {
 
         if (!respuesta.ok) {
             throw new Error(
-                "Python respondió con HTTP " +
-                respuesta.status
+                "API no disponible"
             );
         }
 
 
-        const datos =
+        const datosAPI =
             await respuesta.json();
 
 
+        datos = datosAPI;
+
+
         console.log(
-            "Respuesta de Python:",
-            datos
+            "GrifoPYME API:",
+            datosAPI
         );
-
-
-        datosPython = datos;
 
 
         // ==================================================
         // ESTADO
         // ==================================================
 
-        document.getElementById(
-            "pythonStatus"
-        ).textContent =
-            "PYTHON CONECTADO";
+        const status =
+            document.getElementById(
+                "pythonStatus"
+            );
 
 
-        document.getElementById(
-            "terminalStatus"
-        ).textContent =
-            "ONLINE";
+        const terminalStatus =
+            document.getElementById(
+                "terminalStatus"
+            );
 
 
-        document.getElementById(
-            "terminalOnline"
-        ).textContent =
-            "ONLINE";
+        const terminalOnline =
+            document.getElementById(
+                "terminalOnline"
+            );
+
+
+        if (status) {
+            status.textContent =
+                "PYTHON CONECTADO";
+        }
+
+
+        if (terminalStatus) {
+            terminalStatus.textContent =
+                "ONLINE";
+        }
+
+
+        if (terminalOnline) {
+            terminalOnline.textContent =
+                "ONLINE";
+        }
 
 
         // ==================================================
         // VERSIÓN
         // ==================================================
 
-        document.getElementById(
-            "version"
-        ).textContent =
-            datos.version || "1.0";
-
-
-    }
-    catch (error) {
-
-        console.error(
-            "Error conectando con Python:",
-            error
-        );
-
-
-        datosPython = null;
-
-
-        document.getElementById(
-            "pythonStatus"
-        ).textContent =
-            "PYTHON SIN CONEXIÓN";
-
-
-        document.getElementById(
-            "terminalStatus"
-        ).textContent =
-            "OFFLINE";
-
-
-        document.getElementById(
-            "terminalOnline"
-        ).textContent =
-            "OFFLINE";
-
-
-        document.getElementById(
-            "version"
-        ).textContent =
-            "—";
-
-    }
-
-}
-
-
-// ==========================================================
-// DESCARGAR GRIFOPYME
-// ==========================================================
-
-function descargar() {
-
-    console.log(
-        "Datos disponibles:",
-        datosPython
-    );
-
-
-    if (!datosPython) {
-
-        alert(
-            "Python todavía no está conectado."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !datosPython.links
-    ) {
-
-        alert(
-            "Python no devolvió los enlaces."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !datosPython.links.download
-    ) {
-
-        alert(
-            "Python no devolvió el enlace de descarga."
-        );
-
-        console.error(
-            "links.download no existe:",
-            datosPython
-        );
-
-        return;
-
-    }
-
-
-    const enlace =
-        datosPython.links.download;
-
-
-    console.log(
-        "Descargando:",
-        enlace
-    );
-
-
-    // Va DIRECTAMENTE al enlace del EXE.
-    window.location.href =
-        enlace;
-
-}
-
-
-// ==========================================================
-// BOTONES DE DESCARGA
-// ==========================================================
-
-document.getElementById(
-    "downloadBtn"
-).addEventListener(
-    "click",
-    descargar
-);
-
-
-document.getElementById(
-    "downloadBottom"
-).addEventListener(
-    "click",
-    descargar
-);
-
-
-// ==========================================================
-// COMPRAR LICENCIA
-// ==========================================================
-
-function comprar(tipo) {
-
-    if (!datosPython) {
-
-        alert(
-            "Python todavía no está conectado."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !datosPython.licencias
-    ) {
-
-        alert(
-            "No se pudieron obtener las licencias."
-        );
-
-        return;
-
-    }
-
-
-    const enlace =
-        datosPython.licencias[tipo];
-
-
-    if (!enlace) {
-
-        alert(
-            "No se encontró el enlace de esta licencia."
-        );
-
-        return;
-
-    }
-
-
-    window.location.href =
-        enlace;
-
-}
-
-
-// ==========================================================
-// BOTONES DE LICENCIA
-// ==========================================================
-
-document.getElementById(
-    "buy24"
-).addEventListener(
-    "click",
-    function () {
-
-        comprar("24h");
-
-    }
-);
-
-
-document.getElementById(
-    "buy7"
-).addEventListener(
-    "click",
-    function () {
-
-        comprar("7dias");
-
-    }
-);
-
-
-document.getElementById(
-    "buy30"
-).addEventListener(
-    "click",
-    function () {
-
-        comprar("30dias");
-
-    }
-);
-
-
-document.getElementById(
-    "buyPermanent"
-).addEventListener(
-    "click",
-    function () {
-
-        comprar("permanente");
-
-    }
-);
-
-
-// ==========================================================
-// WHATSAPP
-// ==========================================================
-
-document.getElementById(
-    "qrButton"
-)?.addEventListener(
-    "click",
-    function () {
-
-        if (
-            datosPython &&
-            datosPython.links &&
-            datosPython.links.whatsapp
-        ) {
-
-            window.location.href =
-                datosPython.links.whatsapp;
-
+        const version =
+            document.getElementById(
+                "version"
+            );
+
+
+        if (version) {
+            version.textContent =
+                datosAPI.version || "1.0";
         }
 
-    }
-);
+
+        // ==================================================
+        // DESCARGA
+        // ==================================================
+
+        const downloadButton =
+            document.getElementById(
+                "downloadButton"
+            );
 
 
-// ==========================================================
-// BOTÓN ARRIBA
-// ==========================================================
+        const downloadButton2 =
+            document.getElementById(
+                "downloadButton2"
+            );
 
-const topButton =
-    document.getElementById(
-        "topButton"
-    );
-
-
-window.addEventListener(
-    "scroll",
-    function () {
 
         if (
-            window.scrollY > 400
+            datosAPI.links &&
+            datosAPI.links.download
         ) {
 
-            topButton.classList.add(
-                "visible"
-            );
+            if (downloadButton) {
+
+                downloadButton.href =
+                    datosAPI.links.download;
+
+            }
+
+
+            if (downloadButton2) {
+
+                downloadButton2.href =
+                    datosAPI.links.download;
+
+            }
 
         }
         else {
 
-            topButton.classList.remove(
-                "visible"
+            console.error(
+                "Python no entregó links.download"
             );
 
         }
 
+
+        // ==================================================
+        // GITHUB
+        // ==================================================
+
+        const githubButton =
+            document.getElementById(
+                "githubButton"
+            );
+
+
+        const githubButton2 =
+            document.getElementById(
+                "githubButton2"
+            );
+
+
+        if (
+            datosAPI.links &&
+            datosAPI.links.github
+        ) {
+
+            if (githubButton) {
+
+                githubButton.href =
+                    datosAPI.links.github;
+
+            }
+
+
+            if (githubButton2) {
+
+                githubButton2.href =
+                    datosAPI.links.github;
+
+            }
+
+        }
+
+
+        // ==================================================
+        // GITHUB CLONE
+        // ==================================================
+
+        const cloneCommand =
+            document.getElementById(
+                "cloneCommand"
+            );
+
+
+        if (
+            cloneCommand &&
+            datosAPI.git &&
+            datosAPI.git.clone
+        ) {
+
+            cloneCommand.textContent =
+                datosAPI.git.clone;
+
+        }
+
+
+        // ==================================================
+        // WHATSAPP
+        // ==================================================
+
+        const whatsappButton =
+            document.getElementById(
+                "whatsappButton"
+            );
+
+
+        if (
+            whatsappButton &&
+            datosAPI.links &&
+            datosAPI.links.whatsapp
+        ) {
+
+            whatsappButton.href =
+                datosAPI.links.whatsapp;
+
+        }
+
+
     }
-);
+
+    catch (error) {
+
+        console.error(
+            "No se pudo conectar con Python:",
+            error
+        );
 
 
-topButton.addEventListener(
-    "click",
-    function () {
+        const status =
+            document.getElementById(
+                "pythonStatus"
+            );
 
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
+
+        const terminalStatus =
+            document.getElementById(
+                "terminalStatus"
+            );
+
+
+        const terminalOnline =
+            document.getElementById(
+                "terminalOnline"
+            );
+
+
+        if (status) {
+
+            status.textContent =
+                "PYTHON SIN CONEXIÓN";
+
+        }
+
+
+        if (terminalStatus) {
+
+            terminalStatus.textContent =
+                "OFFLINE";
+
+        }
+
+
+        if (terminalOnline) {
+
+            terminalOnline.textContent =
+                "OFFLINE";
+
+        }
 
     }
-);
+
+}
+
+
+// ==========================================================
+// AÑO
+// ==========================================================
+
+const year =
+    document.getElementById(
+        "year"
+    );
+
+
+if (year) {
+
+    year.textContent =
+        new Date().getFullYear();
+
+}
+
+
+// ==========================================================
+// COPIAR GIT
+// ==========================================================
+
+document
+    .getElementById(
+        "copyButton"
+    )
+    ?.addEventListener(
+        "click",
+        async function () {
+
+            const comando =
+                document.getElementById(
+                    "cloneCommand"
+                );
+
+
+            if (!comando) {
+                return;
+            }
+
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    comando.textContent
+                );
+
+
+                this.textContent =
+                    "Copiado";
+
+
+                setTimeout(
+                    () => {
+
+                        this.textContent =
+                            "Copiar";
+
+                    },
+                    1500
+                );
+
+            }
+            catch {
+
+                alert(
+                    "No se pudo copiar."
+                );
+
+            }
+
+        }
+    );
 
 
 // ==========================================================
 // INICIAR
 // ==========================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        conectarPython();
-
-    }
-);
+cargarDatos();
