@@ -1,3 +1,6 @@
+from http.server import BaseHTTPRequestHandler
+import json
+import platform
 import urllib.parse
 import io
 import base64
@@ -5,14 +8,22 @@ import base64
 import qrcode
 
 
-# ==========================================
+# ==========================================================
 # CONFIGURACIÓN
-# ==========================================
+# ==========================================================
 
-WHATSAPP = "5356639178"
+PROJECT = "GrifoPYME"
+
+VERSION = "1.0"
 
 
-DESCARGA = (
+GITHUB_URL = (
+    "https://github.com/"
+    "xyvenqorix/GrifoPYME"
+)
+
+
+DOWNLOAD_URL = (
     "https://github.com/"
     "xyvenqorix/"
     "GrifoPYME/"
@@ -22,25 +33,68 @@ DESCARGA = (
 )
 
 
-# ==========================================
-# WHATSAPP
-# ==========================================
+WHATSAPP = "5356639178"
 
-def whatsapp(plan, precio):
+
+# ==========================================================
+# OBTENER IP
+# ==========================================================
+
+def get_client_ip(handler):
+
+    forwarded = handler.headers.get(
+        "X-Forwarded-For"
+    )
+
+    if forwarded:
+
+        return forwarded.split(
+            ","
+        )[0].strip()
+
+
+    real_ip = handler.headers.get(
+        "X-Real-IP"
+    )
+
+    if real_ip:
+
+        return real_ip.strip()
+
+
+    try:
+
+        return handler.client_address[0]
+
+    except Exception:
+
+        return "unknown"
+
+
+# ==========================================================
+# CREAR WHATSAPP
+# ==========================================================
+
+def crear_whatsapp(
+    licencia,
+    precio
+):
 
     mensaje = (
-        "Hola, me interesa comprar "
-        "una licencia de GrifoPYME.\n\n"
+        "Hola, me interesa una licencia "
+        "de GrifoPYME.\n\n"
         "Licencia: "
-        + plan
+        + licencia
         + "\n"
         "Precio: "
         + precio
     )
 
+
     texto = urllib.parse.quote(
         mensaje
     )
+
 
     return (
         "https://wa.me/"
@@ -50,16 +104,17 @@ def whatsapp(plan, precio):
     )
 
 
-# ==========================================
-# QR
-# ==========================================
+# ==========================================================
+# CREAR QR
+# ==========================================================
 
-def generar_qr():
+def crear_qr():
 
-    enlace = whatsapp(
-        "Licencia GrifoPYME",
+    enlace = crear_whatsapp(
+        "Consultar licencia",
         "Consultar"
     )
+
 
     qr = qrcode.QRCode(
         version=1,
@@ -67,24 +122,31 @@ def generar_qr():
         border=3
     )
 
+
     qr.add_data(
         enlace
     )
+
 
     qr.make(
         fit=True
     )
 
+
     imagen = qr.make_image()
 
+
     memoria = io.BytesIO()
+
 
     imagen.save(
         memoria,
         format="PNG"
     )
 
+
     memoria.seek(0)
+
 
     datos = base64.b64encode(
         memoria.read()
@@ -92,80 +154,206 @@ def generar_qr():
         "utf-8"
     )
 
+
     return (
         "data:image/png;base64,"
         + datos
     )
 
 
-# ==========================================
-# DATOS DE LA WEB
-# ==========================================
+# ==========================================================
+# HANDLER
+# ==========================================================
 
-def obtener_datos():
+class handler(
+    BaseHTTPRequestHandler
+):
 
-    return {
 
-        "descarga": DESCARGA,
+    def do_GET(self):
 
-        "whatsapp": whatsapp(
-            "Licencia GrifoPYME",
+        client_ip = get_client_ip(
+            self
+        )
+
+
+        whatsapp = crear_whatsapp(
+            "Consultar licencia",
             "Consultar"
-        ),
+        )
 
-        "qr": generar_qr(),
 
-        "licencias": {
+        response = {
 
-            "24h": whatsapp(
-                "24 horas",
-                "GRATIS"
-            ),
+            "online": True,
 
-            "7dias": whatsapp(
-                "7 días",
-                "150 CUP"
-            ),
+            "project":
+                PROJECT,
 
-            "30dias": whatsapp(
-                "30 días",
-                "250 CUP"
-            ),
+            "version":
+                VERSION,
 
-            "permanente": whatsapp(
-                "Permanente",
-                "1000 CUP"
-            )
+            "runtime":
+                "Python",
+
+            "python":
+                platform.python_version(),
+
+            "platform":
+                platform.system(),
+
+            "architecture":
+                platform.machine(),
+
+            "client_ip":
+                client_ip,
+
+
+            "qr":
+                crear_qr(),
+
+
+            "links": {
+
+                "github":
+                    GITHUB_URL,
+
+                "download":
+                    DOWNLOAD_URL,
+
+                "whatsapp":
+                    whatsapp,
+
+
+                "licencias": {
+
+                    "24h":
+                        crear_whatsapp(
+                            "24 horas",
+                            "GRATIS"
+                        ),
+
+                    "7dias":
+                        crear_whatsapp(
+                            "7 días",
+                            "150 CUP"
+                        ),
+
+                    "30dias":
+                        crear_whatsapp(
+                            "30 días",
+                            "250 CUP"
+                        ),
+
+                    "permanente":
+                        crear_whatsapp(
+                            "Permanente",
+                            "1000 CUP"
+                        )
+
+                }
+
+            },
+
+
+            "git": {
+
+                "clone":
+                    "git clone "
+                    + GITHUB_URL
+                    + ".git"
+
+            }
 
         }
 
-    }
+
+        self.send_json(
+            response,
+            200
+        )
 
 
-# ==========================================
-# VERCEL
-# ==========================================
+    def do_OPTIONS(self):
 
-def handler(request):
-
-    datos = obtener_datos()
-
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json",
-            "Cache-Control": "no-store"
-        },
-        "body": datos
-    }
+        self.send_response(
+            204
+        )
 
 
-# ==========================================
-# COMPATIBILIDAD
-# ==========================================
+        self.send_header(
+            "Access-Control-Allow-Origin",
+            "*"
+        )
 
-def main(request):
 
-    return handler(
-        request
-    )
+        self.send_header(
+            "Access-Control-Allow-Methods",
+            "GET, OPTIONS"
+        )
+
+
+        self.send_header(
+            "Access-Control-Allow-Headers",
+            "Content-Type"
+        )
+
+
+        self.end_headers()
+
+
+    def send_json(
+        self,
+        data,
+        status
+    ):
+
+        body = json.dumps(
+            data,
+            ensure_ascii=False
+        ).encode(
+            "utf-8"
+        )
+
+
+        self.send_response(
+            status
+        )
+
+
+        self.send_header(
+            "Content-Type",
+            "application/json; charset=utf-8"
+        )
+
+
+        self.send_header(
+            "Cache-Control",
+            "no-store, no-cache, must-revalidate"
+        )
+
+
+        self.send_header(
+            "Pragma",
+            "no-cache"
+        )
+
+
+        self.send_header(
+            "Access-Control-Allow-Origin",
+            "*"
+        )
+
+
+        self.send_header(
+            "Content-Length",
+            str(len(body))
+        )
+
+
+        self.end_headers()
+
+
+        self.wfile.write(
+            body
+        )
