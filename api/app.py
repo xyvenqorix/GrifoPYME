@@ -1,7 +1,7 @@
+from http.server import BaseHTTPRequestHandler
+import json
+import platform
 import urllib.parse
-import io
-import base64
-import qrcode
 
 
 # ==========================================================
@@ -12,16 +12,20 @@ PROJECT = "GrifoPYME"
 
 VERSION = "1.0"
 
-WHATSAPP = "5356639178"
+
+GITHUB_URL = (
+    "https://github.com/xyvenqorix/GrifoPYME"
+)
+
 
 DOWNLOAD_URL = (
-    "https://github.com/"
-    "xyvenqorix/"
-    "GrifoPYME/"
-    "releases/download/"
-    "GrifoPYME1.0v/"
-    "GrifoPYME.exe"
+    "https://github.com/xyvenqorix/"
+    "GrifoPYME/releases/download/"
+    "GrifoPYME1.0v/GrifoPYME.exe"
 )
+
+
+WHATSAPP = "5356639178"
 
 
 # ==========================================================
@@ -31,8 +35,8 @@ DOWNLOAD_URL = (
 def whatsapp(plan, precio):
 
     mensaje = (
-        "Hola, me interesa comprar una licencia "
-        "de GrifoPYME.\n\n"
+        "Hola, me interesa comprar "
+        "una licencia de GrifoPYME.\n\n"
         "Licencia: "
         + plan
         + "\n"
@@ -40,7 +44,9 @@ def whatsapp(plan, precio):
         + precio
     )
 
-    texto = urllib.parse.quote(mensaje)
+    texto = urllib.parse.quote(
+        mensaje
+    )
 
     return (
         "https://wa.me/"
@@ -51,97 +57,207 @@ def whatsapp(plan, precio):
 
 
 # ==========================================================
-# QR
+# OBTENER IP
 # ==========================================================
 
-def generar_qr():
+def get_client_ip(handler):
 
-    enlace = whatsapp(
-        "Licencia GrifoPYME",
-        "Consultar"
+    forwarded = handler.headers.get(
+        "X-Forwarded-For"
     )
 
-    qr = qrcode.QRCode(
-        version=1,
-        box_size=8,
-        border=3
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+
+
+    real_ip = handler.headers.get(
+        "X-Real-IP"
     )
 
-    qr.add_data(enlace)
-    qr.make(fit=True)
+    if real_ip:
+        return real_ip.strip()
 
-    imagen = qr.make_image()
 
-    memoria = io.BytesIO()
+    try:
+        return handler.client_address[0]
 
-    imagen.save(
-        memoria,
-        format="PNG"
-    )
-
-    memoria.seek(0)
-
-    datos = base64.b64encode(
-        memoria.read()
-    ).decode("utf-8")
-
-    return (
-        "data:image/png;base64,"
-        + datos
-    )
+    except Exception:
+        return "unknown"
 
 
 # ==========================================================
-# API
+# HANDLER
 # ==========================================================
 
-def handler(request):
+class handler(BaseHTTPRequestHandler):
 
-    datos = {
-        "project": PROJECT,
-        "version": VERSION,
 
-        "descarga": DOWNLOAD_URL,
+    def do_GET(self):
 
-        "whatsapp": whatsapp(
-            "Licencia GrifoPYME",
-            "Consultar"
-        ),
+        client_ip = get_client_ip(self)
 
-        "qr": generar_qr(),
 
-        "licencias": {
+        response = {
 
-            "24h": whatsapp(
-                "24 horas",
-                "GRATIS"
-            ),
+            "online": True,
 
-            "7dias": whatsapp(
-                "7 días",
-                "150 CUP"
-            ),
+            "project": PROJECT,
 
-            "30dias": whatsapp(
-                "30 días",
-                "250 CUP"
-            ),
+            "version": VERSION,
 
-            "permanente": whatsapp(
-                "Permanente",
-                "1000 CUP"
-            )
+            "runtime": "Python",
+
+            "python":
+                platform.python_version(),
+
+            "platform":
+                platform.system(),
+
+            "architecture":
+                platform.machine(),
+
+            "client_ip":
+                client_ip,
+
+
+            "links": {
+
+                "github":
+                    GITHUB_URL,
+
+                "download":
+                    DOWNLOAD_URL,
+
+                "whatsapp":
+                    whatsapp(
+                        "Licencia GrifoPYME",
+                        "Consultar"
+                    )
+
+            },
+
+
+            "licencias": {
+
+                "24h":
+                    whatsapp(
+                        "24 horas",
+                        "GRATIS"
+                    ),
+
+                "7dias":
+                    whatsapp(
+                        "7 días",
+                        "150 CUP"
+                    ),
+
+                "30dias":
+                    whatsapp(
+                        "30 días",
+                        "250 CUP"
+                    ),
+
+                "permanente":
+                    whatsapp(
+                        "Permanente",
+                        "1000 CUP"
+                    )
+
+            },
+
+
+            "git": {
+
+                "clone":
+                    f"git clone {GITHUB_URL}.git"
+
+            }
 
         }
-    }
 
-    return {
-        "statusCode": 200,
 
-        "headers": {
-            "Content-Type": "application/json",
-            "Cache-Control": "no-store"
-        },
+        self.send_json(
+            response,
+            200
+        )
 
-        "body": datos
-    }
+
+    def do_OPTIONS(self):
+
+        self.send_response(204)
+
+
+        self.send_header(
+            "Access-Control-Allow-Origin",
+            "*"
+        )
+
+
+        self.send_header(
+            "Access-Control-Allow-Methods",
+            "GET, OPTIONS"
+        )
+
+
+        self.send_header(
+            "Access-Control-Allow-Headers",
+            "Content-Type"
+        )
+
+
+        self.end_headers()
+
+
+    def send_json(
+        self,
+        data,
+        status
+    ):
+
+        body = json.dumps(
+            data,
+            ensure_ascii=False
+        ).encode("utf-8")
+
+
+        self.send_response(
+            status
+        )
+
+
+        self.send_header(
+            "Content-Type",
+            "application/json; charset=utf-8"
+        )
+
+
+        self.send_header(
+            "Cache-Control",
+            "no-store, no-cache, must-revalidate"
+        )
+
+
+        self.send_header(
+            "Pragma",
+            "no-cache"
+        )
+
+
+        self.send_header(
+            "Access-Control-Allow-Origin",
+            "*"
+        )
+
+
+        self.send_header(
+            "Content-Length",
+            str(len(body))
+        )
+
+
+        self.end_headers()
+
+
+        self.wfile.write(
+            body
+        )
