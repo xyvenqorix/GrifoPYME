@@ -21,7 +21,8 @@ GITHUB_URL = (
 DOWNLOAD_URL = (
     "https://github.com/xyvenqorix/"
     "GrifoPYME/releases/download/"
-    "GrifoPYME1.0v/GrifoPYME.exe"
+    "GrifoPYME1.0v/"
+    "GrifoPYME.exe"
 )
 
 
@@ -55,7 +56,7 @@ def whatsapp(plan, precio):
 
 
 # ==========================================================
-# IP
+# OBTENER IP
 # ==========================================================
 
 def get_client_ip(handler):
@@ -188,26 +189,30 @@ class handler(BaseHTTPRequestHandler):
 
         self.send_response(204)
 
+
         self.send_header(
             "Access-Control-Allow-Origin",
             "*"
         )
+
 
         self.send_header(
             "Access-Control-Allow-Methods",
             "GET, OPTIONS"
         )
 
+
         self.send_header(
             "Access-Control-Allow-Headers",
             "Content-Type"
         )
 
+
         self.end_headers()
 
 
     # ======================================================
-    # JSON
+    # RESPUESTA JSON
     # ======================================================
 
     def send_json(
