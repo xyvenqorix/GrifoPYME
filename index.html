@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -8,145 +10,286 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <meta name="theme-color" content="#06090d">
+    <meta
+        name="theme-color"
+        content="#071018"
+    >
 
-    <title>GrifoPYME — Licencias</title>
+    <title>GrifoPYME — Gestión para negocios</title>
 
     <meta
         name="description"
-        content="GrifoPYME — Sistema de gestión para negocios."
+        content="GrifoPYME: sistema sencillo para gestionar ventas, inventario, clientes y proveedores."
     >
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
-<header class="navbar">
 
-    <a href="#" class="brand">
-        <span>◈</span>
-        GrifoPYME
-    </a>
+<header class="header">
 
-    <nav>
-        <a href="#licencias">Licencias</a>
-        <a href="#descargar">Descargar</a>
-    </nav>
+    <nav class="navbar">
 
-</header>
+        <a
+            href="#inicio"
+            class="logo"
+        >
+            ◈ Grifo<span>PYME</span>
+        </a>
 
 
-<main>
+        <div class="nav-links">
 
-<section class="hero">
+            <a href="#inicio">
+                Inicio
+            </a>
 
-    <div class="hero-content">
+            <a href="#funciones">
+                Funciones
+            </a>
 
-        <div class="status">
-            <span></span>
-            <span id="pythonStatus">
-                CONECTANDO CON PYTHON...
-            </span>
-        </div>
+            <a href="#licencias">
+                Licencias
+            </a>
 
-        <h1>
-            GrifoPYME
-            <strong>
-                Gestiona tu negocio.
-            </strong>
-        </h1>
-
-        <p>
-            Sistema sencillo para gestionar ventas,
-            inventario, clientes y proveedores.
-        </p>
-
-        <div class="hero-buttons">
-
-            <button
-                id="downloadBtn"
-                class="btn primary"
-                type="button"
-            >
-                Descargar GrifoPYME
-                <span>↓</span>
-            </button>
-
-            <a
-                href="#licencias"
-                class="btn secondary"
-            >
-                Ver licencias
-                <span>↓</span>
+            <a href="#descarga">
+                Descargar
             </a>
 
         </div>
 
-        <div class="hero-meta">
-            <span>● Windows</span>
-            <span>● Python</span>
-            <span>● GrifoPYME</span>
-        </div>
-
-    </div>
+    </nav>
 
 
-    <div class="terminal">
+    <section
+        id="inicio"
+        class="hero"
+    >
 
-        <div class="terminal-top">
+        <div class="status">
 
-            <div class="terminal-dots">
-                <i></i>
-                <i></i>
-                <i></i>
-            </div>
+            <span
+                id="estado"
+                class="status-dot"
+            ></span>
 
-            <span>GrifoPYME</span>
-
-            <span id="terminalStatus">
-                READY
+            <span id="estadoTexto">
+                CONECTANDO CON PYTHON...
             </span>
 
         </div>
 
-        <div class="terminal-body">
 
-            <div>
-                Python &gt;
-                <span class="value">
-                    GrifoPYME
-                </span>
+        <div class="hero-badge">
+            WINDOWS · PYTHON · PYME
+        </div>
+
+
+        <h1>
+            Grifo<span>PYME</span>
+        </h1>
+
+
+        <p class="hero-text">
+            Gestiona tu negocio de forma sencilla.
+            Controla ventas, inventario, clientes
+            y proveedores desde una sola aplicación.
+        </p>
+
+
+        <div class="hero-buttons">
+
+            <a
+                data-download
+                class="button primary"
+                href="#"
+            >
+                Descargar GrifoPYME
+                <b>↓</b>
+            </a>
+
+
+            <a
+                data-github
+                class="button secondary"
+                href="#"
+            >
+                Ver GitHub
+            </a>
+
+        </div>
+
+    </section>
+
+</header>
+
+
+
+<main>
+
+
+<!-- ======================================================
+     FUNCIONES
+====================================================== -->
+
+<section
+    id="funciones"
+    class="section"
+>
+
+    <div class="section-heading">
+
+        <span>
+            CARACTERÍSTICAS
+        </span>
+
+        <h2>
+            Todo organizado.
+        </h2>
+
+        <p>
+            Las herramientas principales para llevar
+            el control de tu negocio.
+        </p>
+
+    </div>
+
+
+    <div class="cards">
+
+
+        <article class="card">
+
+            <div class="card-icon">
+                💰
             </div>
 
-            <br>
+            <h3>
+                Ventas
+            </h3>
 
-            <div class="muted">
-                Sistema de gestión para negocios.
+            <p>
+                Registra y controla tus ventas
+                de forma rápida y sencilla.
+            </p>
+
+        </article>
+
+
+        <article class="card">
+
+            <div class="card-icon">
+                📦
             </div>
 
-            <br>
+            <h3>
+                Inventario
+            </h3>
 
-            <div>
-                Estado:
-                <span
-                    id="terminalOnline"
-                    class="value"
-                >
-                    CONECTANDO...
-                </span>
+            <p>
+                Mantén organizados tus productos,
+                cantidades y precios.
+            </p>
+
+        </article>
+
+
+        <article class="card">
+
+            <div class="card-icon">
+                👥
             </div>
 
-            <br>
+            <h3>
+                Clientes
+            </h3>
 
-            <div>
-                Versión:
-                <span
-                    id="version"
-                    class="value"
-                >
-                    —
-                </span>
+            <p>
+                Guarda y consulta la información
+                de tus clientes.
+            </p>
+
+        </article>
+
+
+        <article class="card">
+
+            <div class="card-icon">
+                📊
+            </div>
+
+            <h3>
+                Reportes
+            </h3>
+
+            <p>
+                Consulta información de tu negocio
+                de manera clara y organizada.
+            </p>
+
+        </article>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ======================================================
+     INFORMACIÓN
+====================================================== -->
+
+<section class="dark-section">
+
+    <div class="info">
+
+        <div>
+
+            <span class="eyebrow">
+                GRIFOPYME
+            </span>
+
+            <h2>
+                Simple para trabajar.
+            </h2>
+
+            <p>
+                Diseñado para pequeños negocios que
+                necesitan controlar sus operaciones
+                sin complicaciones.
+            </p>
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat">
+                <strong>VENTAS</strong>
+                <span>Control de operaciones</span>
+            </div>
+
+            <div class="stat">
+                <strong>INVENTARIO</strong>
+                <span>Productos y cantidades</span>
+            </div>
+
+            <div class="stat">
+                <strong>CLIENTES</strong>
+                <span>Información organizada</span>
+            </div>
+
+            <div class="stat">
+                <strong>PYTHON</strong>
+                <span>Aplicación de escritorio</span>
             </div>
 
         </div>
@@ -155,6 +298,11 @@
 
 </section>
 
+
+
+<!-- ======================================================
+     LICENCIAS
+====================================================== -->
 
 <section
     id="licencias"
@@ -163,36 +311,37 @@
 
     <div class="section-heading">
 
-        <span class="eyebrow">
+        <span>
             LICENCIAS
         </span>
 
         <h2>
-            Elige tu licencia
+            Elige tu tiempo.
         </h2>
 
         <p>
-            Selecciona el tiempo que necesitas
-            para utilizar GrifoPYME.
+            Solicita la licencia que necesitas
+            directamente por WhatsApp.
         </p>
 
     </div>
 
 
-    <div class="cards">
+    <div class="license-grid">
 
-        <article class="card">
 
-            <div class="card-icon">
+        <article class="license-card">
+
+            <div class="license-icon">
                 ⚡
             </div>
 
-            <span class="label">
+            <small>
                 PRUEBA
-            </span>
+            </small>
 
             <h3>
-                24 HORAS
+                24 horas
             </h3>
 
             <div class="price">
@@ -200,259 +349,291 @@
             </div>
 
             <p>
-                Una licencia gratuita para probar
-                GrifoPYME durante 24 horas.
+                Prueba GrifoPYME durante 24 horas.
             </p>
 
-            <ul>
-                <li>✓ 24 horas</li>
-                <li>✓ Todas las funciones</li>
-                <li>✓ Una prueba gratuita</li>
-            </ul>
-
-            <button
-                id="buy24"
-                class="buy"
-                type="button"
+            <a
+                data-license="24h"
+                href="#"
+                class="license-button"
             >
-                Obtener licencia
-            </button>
+                Obtener
+            </a>
 
         </article>
 
 
-        <article class="card">
+        <article class="license-card">
 
-            <div class="card-icon">
+            <div class="license-icon">
                 🔐
             </div>
 
-            <span class="label">
+            <small>
                 SEMANAL
-            </span>
+            </small>
 
             <h3>
-                7 DÍAS
+                7 días
             </h3>
 
             <div class="price">
                 150
-                <small>CUP</small>
+                <em>CUP</em>
             </div>
 
             <p>
-                Licencia para utilizar GrifoPYME
-                durante 7 días.
+                Utiliza GrifoPYME durante una semana.
             </p>
 
-            <ul>
-                <li>✓ 7 días</li>
-                <li>✓ Todas las funciones</li>
-                <li>✓ Activación por código</li>
-            </ul>
-
-            <button
-                id="buy7"
-                class="buy"
-                type="button"
+            <a
+                data-license="7dias"
+                href="#"
+                class="license-button"
             >
-                Comprar licencia
-            </button>
+                Comprar
+            </a>
 
         </article>
 
 
-        <article class="card featured">
+        <article class="license-card featured">
 
-            <div class="recommended">
+            <div class="featured-label">
                 RECOMENDADA
             </div>
 
-            <div class="card-icon">
+            <div class="license-icon">
                 🚀
             </div>
 
-            <span class="label">
+            <small>
                 MENSUAL
-            </span>
+            </small>
 
             <h3>
-                30 DÍAS
+                30 días
             </h3>
 
             <div class="price">
                 250
-                <small>CUP</small>
+                <em>CUP</em>
             </div>
 
             <p>
-                Licencia mensual para utilizar
-                todas las funciones.
+                La opción ideal para utilizar
+                GrifoPYME durante un mes.
             </p>
 
-            <ul>
-                <li>✓ 30 días</li>
-                <li>✓ Todas las funciones</li>
-                <li>✓ Activación por código</li>
-            </ul>
-
-            <button
-                id="buy30"
-                class="buy"
-                type="button"
+            <a
+                data-license="30dias"
+                href="#"
+                class="license-button"
             >
-                Comprar licencia
-            </button>
+                Comprar
+            </a>
 
         </article>
 
 
-        <article class="card">
+        <article class="license-card">
 
-            <div class="card-icon">
-                ♾️
+            <div class="license-icon">
+                ♾
             </div>
 
-            <span class="label">
+            <small>
                 PERMANENTE
-            </span>
+            </small>
 
             <h3>
-                SIN VENCIMIENTO
+                Sin vencimiento
             </h3>
 
             <div class="price">
                 1000
-                <small>CUP</small>
+                <em>CUP</em>
             </div>
 
             <p>
-                Licencia permanente para
-                GrifoPYME.
+                Licencia permanente para GrifoPYME.
             </p>
 
-            <ul>
-                <li>✓ Sin vencimiento</li>
-                <li>✓ Todas las funciones</li>
-                <li>✓ Activación por código</li>
-            </ul>
-
-            <button
-                id="buyPermanent"
-                class="buy"
-                type="button"
+            <a
+                data-license="permanente"
+                href="#"
+                class="license-button"
             >
-                Comprar licencia
-            </button>
+                Comprar
+            </a>
 
         </article>
+
 
     </div>
 
 </section>
 
 
+
+<!-- ======================================================
+     DESCARGA
+====================================================== -->
+
 <section
-    id="descargar"
-    class="download section"
+    id="descarga"
+    class="download-section"
 >
 
     <div class="download-box">
 
-        <div>
+        <div class="download-symbol">
+            ◈
+        </div>
 
-            <span class="eyebrow">
-                GRIFOPYME / WINDOWS
-            </span>
+        <span class="eyebrow">
+            WINDOWS
+        </span>
 
-            <h2>
-                Descarga la aplicación
-            </h2>
+        <h2>
+            Descargar GrifoPYME
+        </h2>
+
+        <p>
+            Obtén la última versión disponible
+            de la aplicación.
+        </p>
+
+
+        <div class="notice">
+
+            <strong>
+                ⚠ Antes de ejecutar
+            </strong>
 
             <p>
-                Obtén la versión disponible de
-                GrifoPYME para Windows.
+                Descarga el archivo ejecutable
+                y ejecútalo en Windows.
             </p>
 
         </div>
 
-        <button
-            id="downloadBottom"
-            class="btn primary"
-            type="button"
+
+        <a
+            data-download
+            href="#"
+            class="button primary download-button"
         >
-            Descargar .EXE ↓
-        </button>
+            Descargar .EXE
+            <b>↓</b>
+        </a>
+
+
+        <div class="version">
+            Versión
+            <strong id="version">
+                ...
+            </strong>
+        </div>
 
     </div>
 
 </section>
 
 
-<section class="contact">
 
-    <span class="eyebrow">
-        LICENCIAS
-    </span>
+<!-- ======================================================
+     GITHUB
+====================================================== -->
 
-    <h2>
-        ¿Necesitas una licencia?
-    </h2>
+<section
+    id="github"
+    class="section github"
+>
 
-    <p>
-        Escanea el QR o utiliza WhatsApp
-        para solicitarla.
-    </p>
+    <div class="section-heading">
+
+        <span>
+            OPEN SOURCE
+        </span>
+
+        <h2>
+            Código fuente.
+        </h2>
+
+        <p>
+            Revisa el proyecto directamente
+            desde GitHub.
+        </p>
+
+    </div>
+
+
+    <div class="terminal">
+
+        <div class="terminal-bar">
+
+            <i></i>
+            <i></i>
+            <i></i>
+
+        </div>
+
+
+        <div class="terminal-body">
+
+            <span class="terminal-symbol">
+                $
+            </span>
+
+            <code id="cloneCommand">
+                Cargando...
+            </code>
+
+            <button id="copyButton">
+                Copiar
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <a
+        data-github
+        href="#"
+        class="button secondary"
+    >
+        Abrir GitHub
+    </a>
 
 </section>
+
 
 </main>
 
 
-<div class="qr-floating">
-
-    <div class="qr-title">
-        QUIERO UNA LICENCIA
-    </div>
-
-    <img
-        id="qrImage"
-        src=""
-        alt="QR para solicitar licencia"
-    >
-
-    <button
-        id="qrButton"
-        type="button"
-    >
-        WhatsApp
-    </button>
-
-</div>
-
-
-<button
-    id="topButton"
-    type="button"
->
-    ↑
-</button>
-
 
 <footer>
 
-    <strong>
-        GrifoPYME
-    </strong>
+    <div class="footer-logo">
+        ◈ GrifoPYME
+    </div>
+
+    <p>
+        Sistema de gestión para negocios.
+    </p>
 
     <span>
-        Sistema de gestión para negocios
+        © 2026 GrifoPYME
     </span>
 
 </footer>
 
 
+
 <script src="script.js"></script>
 
 </body>
+
 </html>
