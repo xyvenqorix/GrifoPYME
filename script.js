@@ -7,134 +7,143 @@ let datosPython = null;
 // CONECTAR CON PYTHON
 // ==========================================================
 
-async function conectarPython()
-{
-    try
-    {
+async function conectarPython() {
+
+    try {
+
         const respuesta = await fetch(
-            API_URL,
+            API_URL + "?t=" + Date.now(),
             {
                 method: "GET",
                 cache: "no-store"
             }
         );
 
-        if(!respuesta.ok)
-        {
+        if (!respuesta.ok) {
             throw new Error(
-                "Python no respondió"
+                "Python respondió con error " +
+                respuesta.status
             );
         }
 
-        const datos =
-            await respuesta.json();
+        const datos = await respuesta.json();
 
         datosPython = datos;
 
 
-        // ------------------------------------------
+        // ==================================================
         // ESTADO
-        // ------------------------------------------
+        // ==================================================
 
         document.getElementById(
             "pythonStatus"
-        ).textContent =
-            "PYTHON CONECTADO";
+        ).textContent = "PYTHON CONECTADO";
 
 
         document.getElementById(
             "terminalStatus"
-        ).textContent =
-            "ONLINE";
+        ).textContent = "ONLINE";
 
 
         document.getElementById(
             "terminalOnline"
-        ).textContent =
-            "ONLINE";
+        ).textContent = "ONLINE";
 
 
-        // ------------------------------------------
+        // ==================================================
         // VERSIÓN
-        // ------------------------------------------
+        // ==================================================
 
         document.getElementById(
             "version"
         ).textContent =
-            datos.version;
+            datos.version || "1.0";
 
 
-        // ------------------------------------------
+        // ==================================================
         // QR
-        // ------------------------------------------
+        // ==================================================
 
-        if(datos.qr)
-        {
+        if (datos.qr) {
+
             document.getElementById(
                 "qrImage"
-            ).src =
-                datos.qr;
+            ).src = datos.qr;
+
         }
 
     }
-    catch(error)
-    {
-        console.error(error);
+    catch (error) {
+
+        console.error(
+            "Error conectando con Python:",
+            error
+        );
+
 
         document.getElementById(
             "pythonStatus"
         ).textContent =
             "PYTHON SIN CONEXIÓN";
 
+
         document.getElementById(
             "terminalStatus"
         ).textContent =
             "OFFLINE";
 
+
         document.getElementById(
             "terminalOnline"
         ).textContent =
             "OFFLINE";
-    }
-}
 
+
+        document.getElementById(
+            "version"
+        ).textContent =
+            "—";
+
+    }
+
+}
 
 
 // ==========================================================
 // DESCARGAR
 // ==========================================================
 
-function descargar()
-{
-    if(
+function descargar() {
+
+    if (
         !datosPython ||
-        !datosPython.links ||
-        !datosPython.links.download
-    )
-    {
+        !datosPython.descarga
+    ) {
+
         alert(
             "No se pudo obtener el enlace de descarga."
         );
 
         return;
+
     }
 
 
-    /*
-        IMPORTANTE:
+    // IMPORTANTE:
+    // No usamos #descargar.
+    // No hacemos scroll.
+    // Vamos directamente al EXE.
 
-        No usamos href="#".
+    window.location.assign(
+        datosPython.descarga
+    );
 
-        No hacemos scroll.
-
-        Vamos directamente al enlace que
-        entregó Python.
-    */
-
-    window.location.href =
-        datosPython.links.download;
 }
 
+
+// ==========================================================
+// BOTONES DE DESCARGA
+// ==========================================================
 
 document.getElementById(
     "downloadBtn"
@@ -152,45 +161,57 @@ document.getElementById(
 );
 
 
-
 // ==========================================================
-// WHATSAPP
+// WHATSAPP / LICENCIAS
 // ==========================================================
 
-function comprar(tipo)
-{
-    if(
+function comprar(tipo) {
+
+    if (
         !datosPython ||
-        !datosPython.links ||
-        !datosPython.links.licencias
-    )
-    {
+        !datosPython.licencias
+    ) {
+
         alert(
             "Python todavía no está conectado."
         );
 
         return;
+
     }
 
 
     const enlace =
-        datosPython.links.licencias[tipo];
+        datosPython.licencias[tipo];
 
 
-    if(enlace)
-    {
-        window.location.href =
-            enlace;
+    if (!enlace) {
+
+        alert(
+            "No se encontró el enlace de esta licencia."
+        );
+
+        return;
+
     }
+
+
+    window.location.assign(
+        enlace
+    );
+
 }
 
+
+// ==========================================================
+// BOTONES DE LICENCIA
+// ==========================================================
 
 document.getElementById(
     "buy24"
 ).addEventListener(
     "click",
-    function()
-    {
+    function () {
         comprar("24h");
     }
 );
@@ -200,8 +221,7 @@ document.getElementById(
     "buy7"
 ).addEventListener(
     "click",
-    function()
-    {
+    function () {
         comprar("7dias");
     }
 );
@@ -211,8 +231,7 @@ document.getElementById(
     "buy30"
 ).addEventListener(
     "click",
-    function()
-    {
+    function () {
         comprar("30dias");
     }
 );
@@ -222,12 +241,10 @@ document.getElementById(
     "buyPermanent"
 ).addEventListener(
     "click",
-    function()
-    {
+    function () {
         comprar("permanente");
     }
 );
-
 
 
 // ==========================================================
@@ -238,20 +255,28 @@ document.getElementById(
     "qrButton"
 ).addEventListener(
     "click",
-    function()
-    {
-        if(
+    function () {
+
+        if (
             datosPython &&
-            datosPython.links &&
-            datosPython.links.whatsapp
-        )
-        {
-            window.location.href =
-                datosPython.links.whatsapp;
+            datosPython.whatsapp
+        ) {
+
+            window.location.assign(
+                datosPython.whatsapp
+            );
+
         }
+        else {
+
+            alert(
+                "Python todavía no está conectado."
+            );
+
+        }
+
     }
 );
-
 
 
 // ==========================================================
@@ -266,41 +291,49 @@ const topButton =
 
 window.addEventListener(
     "scroll",
-    function()
-    {
-        if(window.scrollY > 400)
-        {
+    function () {
+
+        if (window.scrollY > 400) {
+
             topButton.classList.add(
                 "visible"
             );
+
         }
-        else
-        {
+        else {
+
             topButton.classList.remove(
                 "visible"
             );
+
         }
+
     }
 );
 
 
 topButton.addEventListener(
     "click",
-    function()
-    {
-        window.scrollTo(
-            {
-                top: 0,
-                behavior: "smooth"
-            }
-        );
+    function () {
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
     }
 );
-
 
 
 // ==========================================================
 // INICIAR
 // ==========================================================
 
-conectarPython();
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        conectarPython();
+
+    }
+);
