@@ -262,3 +262,7 @@ Para consultar disponibilidad y condiciones de adquisición:
 © 2026 **xyvenqorix**
 
 </p>
+<img
+    alt="Pacman contribution graph"
+    src="https://raw.githubusercontent.com/saiharsha3377/saiharsha3377/output/pacman-contribution-graph.svg"
+  >
