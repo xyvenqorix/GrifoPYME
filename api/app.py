@@ -1,3 +1,5 @@
+from http.server import BaseHTTPRequestHandler
+import json
 import urllib.parse
 import io
 import base64
@@ -5,14 +7,18 @@ import base64
 import qrcode
 
 
-# ==========================================
+# ==========================================================
 # CONFIGURACIÓN
-# ==========================================
+# ==========================================================
+
+PROJECT = "GrifoPYME"
+
+VERSION = "1.0"
 
 WHATSAPP = "5356639178"
 
 
-DESCARGA = (
+DOWNLOAD_URL = (
     "https://github.com/"
     "xyvenqorix/"
     "GrifoPYME/"
@@ -22,9 +28,9 @@ DESCARGA = (
 )
 
 
-# ==========================================
+# ==========================================================
 # WHATSAPP
-# ==========================================
+# ==========================================================
 
 def whatsapp(plan, precio):
 
@@ -50,9 +56,9 @@ def whatsapp(plan, precio):
     )
 
 
-# ==========================================
+# ==========================================================
 # QR
-# ==========================================
+# ==========================================================
 
 def generar_qr():
 
@@ -67,9 +73,7 @@ def generar_qr():
         border=3
     )
 
-    qr.add_data(
-        enlace
-    )
+    qr.add_data(enlace)
 
     qr.make(
         fit=True
@@ -98,15 +102,19 @@ def generar_qr():
     )
 
 
-# ==========================================
-# DATOS DE LA WEB
-# ==========================================
+# ==========================================================
+# DATOS
+# ==========================================================
 
 def obtener_datos():
 
     return {
 
-        "descarga": DESCARGA,
+        "project": PROJECT,
+
+        "version": VERSION,
+
+        "descarga": DOWNLOAD_URL,
 
         "whatsapp": whatsapp(
             "Licencia GrifoPYME",
@@ -142,30 +150,69 @@ def obtener_datos():
     }
 
 
-# ==========================================
+# ==========================================================
 # VERCEL
-# ==========================================
+# ==========================================================
 
-def handler(request):
+class handler(BaseHTTPRequestHandler):
 
-    datos = obtener_datos()
+    def do_GET(self):
 
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json",
-            "Cache-Control": "no-store"
-        },
-        "body": datos
-    }
+        try:
+
+            datos = obtener_datos()
+
+            respuesta = json.dumps(
+                datos,
+                ensure_ascii=False
+            ).encode(
+                "utf-8"
+            )
 
 
-# ==========================================
-# COMPATIBILIDAD
-# ==========================================
+            self.send_response(200)
 
-def main(request):
+            self.send_header(
+                "Content-Type",
+                "application/json; charset=utf-8"
+            )
 
-    return handler(
-        request
-    )
+            self.send_header(
+                "Cache-Control",
+                "no-store, no-cache, must-revalidate"
+            )
+
+            self.send_header(
+                "Access-Control-Allow-Origin",
+                "*"
+            )
+
+            self.end_headers()
+
+            self.wfile.write(
+                respuesta
+            )
+
+
+        except Exception as error:
+
+            respuesta = json.dumps(
+                {
+                    "error": str(error)
+                }
+            ).encode(
+                "utf-8"
+            )
+
+            self.send_response(500)
+
+            self.send_header(
+                "Content-Type",
+                "application/json; charset=utf-8"
+            )
+
+            self.end_headers()
+
+            self.wfile.write(
+                respuesta
+            )
