@@ -1,13 +1,15 @@
-const API = "/api/app.py";
-
-let datos = null;
+const API = "/api";
 
 
 // ==========================================================
-// CARGAR PYTHON
+// CARGAR API
 // ==========================================================
 
-async function cargarDatos() {
+async function cargarAPI() {
+
+    const estado = document.getElementById("estado");
+    const estadoTexto = document.getElementById("estadoTexto");
+    const version = document.getElementById("version");
 
     try {
 
@@ -19,24 +21,17 @@ async function cargarDatos() {
             }
         );
 
-
         if (!respuesta.ok) {
             throw new Error(
-                "API no disponible"
+                "HTTP " + respuesta.status
             );
         }
 
-
-        const datosAPI =
-            await respuesta.json();
-
-
-        datos = datosAPI;
-
+        const datos = await respuesta.json();
 
         console.log(
-            "GrifoPYME API:",
-            datosAPI
+            "API GrifoPYME:",
+            datos
         );
 
 
@@ -44,39 +39,13 @@ async function cargarDatos() {
         // ESTADO
         // ==================================================
 
-        const status =
-            document.getElementById(
-                "pythonStatus"
-            );
+        if (estado) {
+            estado.classList.add("online");
+        }
 
-
-        const terminalStatus =
-            document.getElementById(
-                "terminalStatus"
-            );
-
-
-        const terminalOnline =
-            document.getElementById(
-                "terminalOnline"
-            );
-
-
-        if (status) {
-            status.textContent =
+        if (estadoTexto) {
+            estadoTexto.textContent =
                 "PYTHON CONECTADO";
-        }
-
-
-        if (terminalStatus) {
-            terminalStatus.textContent =
-                "ONLINE";
-        }
-
-
-        if (terminalOnline) {
-            terminalOnline.textContent =
-                "ONLINE";
         }
 
 
@@ -84,15 +53,9 @@ async function cargarDatos() {
         // VERSIÓN
         // ==================================================
 
-        const version =
-            document.getElementById(
-                "version"
-            );
-
-
         if (version) {
             version.textContent =
-                datosAPI.version || "1.0";
+                datos.version || "1.0";
         }
 
 
@@ -100,201 +63,172 @@ async function cargarDatos() {
         // DESCARGA
         // ==================================================
 
-        const downloadButton =
-            document.getElementById(
-                "downloadButton"
+        const descarga =
+            datos.links &&
+            datos.links.download;
+
+
+        const botonesDescarga =
+            document.querySelectorAll(
+                "[data-download]"
             );
 
 
-        const downloadButton2 =
-            document.getElementById(
-                "downloadButton2"
-            );
+        botonesDescarga.forEach(
+            boton => {
 
+                if (descarga) {
 
-        if (
-            datosAPI.links &&
-            datosAPI.links.download
-        ) {
+                    boton.href =
+                        descarga;
 
-            if (downloadButton) {
+                    boton.target =
+                        "_blank";
 
-                downloadButton.href =
-                    datosAPI.links.download;
+                    boton.removeAttribute(
+                        "aria-disabled"
+                    );
+
+                }
 
             }
-
-
-            if (downloadButton2) {
-
-                downloadButton2.href =
-                    datosAPI.links.download;
-
-            }
-
-        }
-        else {
-
-            console.error(
-                "Python no entregó links.download"
-            );
-
-        }
+        );
 
 
         // ==================================================
         // GITHUB
         // ==================================================
 
-        const githubButton =
-            document.getElementById(
-                "githubButton"
-            );
+        const github =
+            datos.links &&
+            datos.links.github;
 
 
-        const githubButton2 =
-            document.getElementById(
-                "githubButton2"
-            );
+        document.querySelectorAll(
+            "[data-github]"
+        ).forEach(
+            boton => {
 
+                if (github) {
 
-        if (
-            datosAPI.links &&
-            datosAPI.links.github
-        ) {
+                    boton.href =
+                        github;
 
-            if (githubButton) {
+                    boton.target =
+                        "_blank";
 
-                githubButton.href =
-                    datosAPI.links.github;
+                }
 
             }
+        );
 
 
-            if (githubButton2) {
+        // ==================================================
+        // WHATSAPP GENERAL
+        // ==================================================
 
-                githubButton2.href =
-                    datosAPI.links.github;
+        const whatsapp =
+            datos.links &&
+            datos.links.whatsapp;
+
+
+        document.querySelectorAll(
+            "[data-whatsapp]"
+        ).forEach(
+            boton => {
+
+                if (whatsapp) {
+
+                    boton.href =
+                        whatsapp;
+
+                    boton.target =
+                        "_blank";
+
+                }
 
             }
+        );
+
+
+        // ==================================================
+        // LICENCIAS
+        // ==================================================
+
+        if (datos.licencias) {
+
+            Object.keys(
+                datos.licencias
+            ).forEach(
+                tipo => {
+
+                    const boton =
+                        document.querySelector(
+                            `[data-license="${tipo}"]`
+                        );
+
+                    if (
+                        boton &&
+                        datos.licencias[tipo]
+                    ) {
+
+                        boton.href =
+                            datos.licencias[tipo];
+
+                        boton.target =
+                            "_blank";
+
+                    }
+
+                }
+            );
 
         }
 
 
         // ==================================================
-        // GITHUB CLONE
+        // GIT
         // ==================================================
 
-        const cloneCommand =
+        const clone =
             document.getElementById(
                 "cloneCommand"
             );
 
 
         if (
-            cloneCommand &&
-            datosAPI.git &&
-            datosAPI.git.clone
+            clone &&
+            datos.git &&
+            datos.git.clone
         ) {
 
-            cloneCommand.textContent =
-                datosAPI.git.clone;
-
-        }
-
-
-        // ==================================================
-        // WHATSAPP
-        // ==================================================
-
-        const whatsappButton =
-            document.getElementById(
-                "whatsappButton"
-            );
-
-
-        if (
-            whatsappButton &&
-            datosAPI.links &&
-            datosAPI.links.whatsapp
-        ) {
-
-            whatsappButton.href =
-                datosAPI.links.whatsapp;
+            clone.textContent =
+                datos.git.clone;
 
         }
 
 
     }
-
     catch (error) {
 
         console.error(
-            "No se pudo conectar con Python:",
+            "Error API:",
             error
         );
 
 
-        const status =
-            document.getElementById(
-                "pythonStatus"
+        if (estado) {
+            estado.classList.remove(
+                "online"
             );
+        }
 
-
-        const terminalStatus =
-            document.getElementById(
-                "terminalStatus"
-            );
-
-
-        const terminalOnline =
-            document.getElementById(
-                "terminalOnline"
-            );
-
-
-        if (status) {
-
-            status.textContent =
+        if (estadoTexto) {
+            estadoTexto.textContent =
                 "PYTHON SIN CONEXIÓN";
-
-        }
-
-
-        if (terminalStatus) {
-
-            terminalStatus.textContent =
-                "OFFLINE";
-
-        }
-
-
-        if (terminalOnline) {
-
-            terminalOnline.textContent =
-                "OFFLINE";
-
         }
 
     }
-
-}
-
-
-// ==========================================================
-// AÑO
-// ==========================================================
-
-const year =
-    document.getElementById(
-        "year"
-    );
-
-
-if (year) {
-
-    year.textContent =
-        new Date().getFullYear();
 
 }
 
@@ -304,9 +238,7 @@ if (year) {
 // ==========================================================
 
 document
-    .getElementById(
-        "copyButton"
-    )
+    .getElementById("copyButton")
     ?.addEventListener(
         "click",
         async function () {
@@ -316,11 +248,9 @@ document
                     "cloneCommand"
                 );
 
-
             if (!comando) {
                 return;
             }
-
 
             try {
 
@@ -328,17 +258,13 @@ document
                     comando.textContent
                 );
 
-
                 this.textContent =
                     "Copiado";
 
-
                 setTimeout(
                     () => {
-
                         this.textContent =
                             "Copiar";
-
                     },
                     1500
                 );
@@ -360,4 +286,4 @@ document
 // INICIAR
 // ==========================================================
 
-cargarDatos();
+cargarAPI();
