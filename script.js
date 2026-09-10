@@ -19,14 +19,24 @@ async function conectarPython() {
             }
         );
 
+
         if (!respuesta.ok) {
             throw new Error(
-                "Python respondió con error " +
+                "Python respondió con HTTP " +
                 respuesta.status
             );
         }
 
-        const datos = await respuesta.json();
+
+        const datos =
+            await respuesta.json();
+
+
+        console.log(
+            "Respuesta de Python:",
+            datos
+        );
+
 
         datosPython = datos;
 
@@ -37,17 +47,20 @@ async function conectarPython() {
 
         document.getElementById(
             "pythonStatus"
-        ).textContent = "PYTHON CONECTADO";
+        ).textContent =
+            "PYTHON CONECTADO";
 
 
         document.getElementById(
             "terminalStatus"
-        ).textContent = "ONLINE";
+        ).textContent =
+            "ONLINE";
 
 
         document.getElementById(
             "terminalOnline"
-        ).textContent = "ONLINE";
+        ).textContent =
+            "ONLINE";
 
 
         // ==================================================
@@ -60,18 +73,6 @@ async function conectarPython() {
             datos.version || "1.0";
 
 
-        // ==================================================
-        // QR
-        // ==================================================
-
-        if (datos.qr) {
-
-            document.getElementById(
-                "qrImage"
-            ).src = datos.qr;
-
-        }
-
     }
     catch (error) {
 
@@ -79,6 +80,9 @@ async function conectarPython() {
             "Error conectando con Python:",
             error
         );
+
+
+        datosPython = null;
 
 
         document.getElementById(
@@ -110,18 +114,21 @@ async function conectarPython() {
 
 
 // ==========================================================
-// DESCARGAR
+// DESCARGAR GRIFOPYME
 // ==========================================================
 
 function descargar() {
 
-    if (
-        !datosPython ||
-        !datosPython.descarga
-    ) {
+    console.log(
+        "Datos disponibles:",
+        datosPython
+    );
+
+
+    if (!datosPython) {
 
         alert(
-            "No se pudo obtener el enlace de descarga."
+            "Python todavía no está conectado."
         );
 
         return;
@@ -129,14 +136,50 @@ function descargar() {
     }
 
 
-    // IMPORTANTE:
-    // No usamos #descargar.
-    // No hacemos scroll.
-    // Vamos directamente al EXE.
+    if (
+        !datosPython.links
+    ) {
 
-    window.location.assign(
-        datosPython.descarga
+        alert(
+            "Python no devolvió los enlaces."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !datosPython.links.download
+    ) {
+
+        alert(
+            "Python no devolvió el enlace de descarga."
+        );
+
+        console.error(
+            "links.download no existe:",
+            datosPython
+        );
+
+        return;
+
+    }
+
+
+    const enlace =
+        datosPython.links.download;
+
+
+    console.log(
+        "Descargando:",
+        enlace
     );
+
+
+    // Va DIRECTAMENTE al enlace del EXE.
+    window.location.href =
+        enlace;
 
 }
 
@@ -162,18 +205,28 @@ document.getElementById(
 
 
 // ==========================================================
-// WHATSAPP / LICENCIAS
+// COMPRAR LICENCIA
 // ==========================================================
 
 function comprar(tipo) {
 
+    if (!datosPython) {
+
+        alert(
+            "Python todavía no está conectado."
+        );
+
+        return;
+
+    }
+
+
     if (
-        !datosPython ||
         !datosPython.licencias
     ) {
 
         alert(
-            "Python todavía no está conectado."
+            "No se pudieron obtener las licencias."
         );
 
         return;
@@ -196,9 +249,8 @@ function comprar(tipo) {
     }
 
 
-    window.location.assign(
-        enlace
-    );
+    window.location.href =
+        enlace;
 
 }
 
@@ -212,7 +264,9 @@ document.getElementById(
 ).addEventListener(
     "click",
     function () {
+
         comprar("24h");
+
     }
 );
 
@@ -222,7 +276,9 @@ document.getElementById(
 ).addEventListener(
     "click",
     function () {
+
         comprar("7dias");
+
     }
 );
 
@@ -232,7 +288,9 @@ document.getElementById(
 ).addEventListener(
     "click",
     function () {
+
         comprar("30dias");
+
     }
 );
 
@@ -242,36 +300,31 @@ document.getElementById(
 ).addEventListener(
     "click",
     function () {
+
         comprar("permanente");
+
     }
 );
 
 
 // ==========================================================
-// QR → WHATSAPP
+// WHATSAPP
 // ==========================================================
 
 document.getElementById(
     "qrButton"
-).addEventListener(
+)?.addEventListener(
     "click",
     function () {
 
         if (
             datosPython &&
-            datosPython.whatsapp
+            datosPython.links &&
+            datosPython.links.whatsapp
         ) {
 
-            window.location.assign(
-                datosPython.whatsapp
-            );
-
-        }
-        else {
-
-            alert(
-                "Python todavía no está conectado."
-            );
+            window.location.href =
+                datosPython.links.whatsapp;
 
         }
 
@@ -293,7 +346,9 @@ window.addEventListener(
     "scroll",
     function () {
 
-        if (window.scrollY > 400) {
+        if (
+            window.scrollY > 400
+        ) {
 
             topButton.classList.add(
                 "visible"
