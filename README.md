@@ -1,3 +1,7 @@
+<div align="center">
+
+<img src="./gitartwork.svg" width="100%">
+
 # 🏪 GrifoPYME
 
 ### Sistema de gestión para pequeños negocios
